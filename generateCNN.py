@@ -2,11 +2,17 @@ import struct
 import argparse
 import os
 import string
+import traceback
+import numpy
 
-# from sklearn.model_selection import train_test_split
-# from tensorflow.keras.models import Sequential, load_model
-# from tensorflow.keras.layers import Dense
-# from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+from tensorflow import math as tf_math
+from tensorflow import reduce_mean
+from tensorflow.keras.models import Sequential, load_model
+from tensorflow.keras.layers import Dense
+from sklearn.metrics import accuracy_score
+
+WINDOW_SIZE = 64
 
 def read_3d_int_slice_binary(filename):
     data = []
@@ -58,7 +64,29 @@ def get_input_target_pairs_from_binary(binaryPath: str):
 
     allInput = [i[0] for i in allData]
     allOutput = [i[1] for i in allData]
-    return allInput, allOutput
+
+    allInput_np = numpy.array(allInput)
+    allOutput_np = numpy.array(allOutput)
+    return allInput_np, allOutput_np
+
+def noiseToSignalLoss(y_true, y_pred):
+    losses = tf_math.divide(
+        tf_math.reduce_sum(
+            tf_math.pow(
+                tf_math.abs(
+                    tf_math.subtract(
+                        y_true,
+                        y_pred
+                    )
+                ),
+                2
+            )
+        ),
+        tf_math.reduce_sum(
+            tf_math.pow(tf_math.abs(y_true),2)
+        )
+    )
+    return reduce_mean(losses)
 
 def main():
     parser = argparse.ArgumentParser(description="Actually generate a model.")
@@ -68,34 +96,48 @@ def main():
     args = parser.parse_args()
 
     binaryPath = args.binaryPath
-    numEpochs = args.numEpochs
+    numEpochs = int(args.numEpochs)
 
     if not os.path.isfile(binaryPath):
         print(f"Error: '{binaryPath}' does not exist or is not a file.")
 
     # unpack and split testing and training data
     X, y = get_input_target_pairs_from_binary(binaryPath)
-    print("X[0]: ", X[0])
-    print("y[0]: ", y[0])
-    # X_train, X_test, y_train, y_test = train_test_split(X,
-	# 												y,
-	# 												test_size=.2)
+    X_train, X_test, y_train, y_test = train_test_split(X,
+													y,
+													test_size=.2)
 
-    # # Generate the network
-    # model = Sequential()
-    # model.add(Dense(units=32, activation='relu', input_dim=WINDOW_SIZE))
-    # model.add(Dense(units=64, activation='relu'))
+    # Generate the network
+    model = Sequential()
+    model.add(Dense(units=64, activation='relu', input_dim=WINDOW_SIZE))
+    model.add(Dense(units=64, activation='relu'))
 
-    # # ideally this returns -1 to 1 instead of 0 to 1, but we can likely normalize outputs ourself
-    # model.add(Dense(units=WINDOW_SIZE, activation='sigmoid')) 
+    # ideally this returns -1 to 1 instead of 0 to 1, but we can likely normalize outputs ourself
+    model.add(Dense(units=WINDOW_SIZE, activation='sigmoid')) 
 
-    # # Compile the model duh
-    # model.compile(loss='ESR', optimizer='sgd', metrics='accuracy')
-    # # Training
-    # model.fit(X_train, y_train, epochs=numEpochs, batch_size=32)
+    # Compile the model duh
+    model.compile(loss=noiseToSignalLoss, optimizer='sgd', metrics=['accuracy'])
+    # Training
+    try:
+        model.fit(X_train, y_train, epochs=numEpochs, batch_size=32)
+    except Exception as e:
+        # Errors can take the form of printing the entire dataset, so we print them to a file
+        # so that we can actually see the traceback
+        with open('./failure_output/exception', mode='w') as file:
+            # Get the traceback information as a string
+            traceback_str = traceback.format_exc()
+            # Write the exception type, message, and traceback to the file
+            file.write(f"Exception Type: {type(e).__name__}\n")
+            file.write(f"Exception Message: {e}\n")
+            file.write(f"Traceback:\n{traceback_str}\n")
+            file.write("-" * 20 + "\n") 
+        print("we hit a error :( ", type(e))
 
-    # y_hat = model.predict(X_test)
-    # accuracy_score(y_test, y_hat)
+    #y_hat = model.predict(X_test)
+    #print(max(y_hat.all()))
+    #accuracy_score(y_test, y_hat)
+
+    model.save("./model/model.keras")
     return
 
 
