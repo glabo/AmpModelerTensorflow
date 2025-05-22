@@ -1,0 +1,16 @@
+services:
+  tensorflow_gpu:
+    image: tensorflow/tensorflow:latest-gpu
+    stdin_open: true
+    tty: true
+    entrypoint: bash
+    restart: "no"
+    volumes:
+      - ./:/workspace
+    working_dir: /workspace
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    runtime: nvidia
