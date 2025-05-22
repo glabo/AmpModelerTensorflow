@@ -16,7 +16,7 @@ def wav_to_csv(di_wav_path, output_wav_path, csv_path):
         di_sample_rate, di_data = wavfile.read(di_wav_path)
     except Exception as e:
         raise ValueError(f"Failed to read WAV file: {e}")
-	
+
     try:
         output_sample_rate, output_data = wavfile.read(output_wav_path)
     except Exception as e:
@@ -27,23 +27,22 @@ def wav_to_csv(di_wav_path, output_wav_path, csv_path):
     print(f"Data shape: {di_data.shape}")
     print(f"Data type: {di_data.dtype}")
 
-	# Verify this stuff all matches
-	assert(di_sample_rate == output_sample_rate)
-	assert(di_data.shape == output_data.shape)
-	assert(di_data.dtype == output_data.dtype)
-	assert(len(di_data) == len(output_data))
-	assert(di_data.ndim == 1 and output_data.ndim == 1)
+    # Verify this stuff all matches
+    assert(di_sample_rate == output_sample_rate)
+    assert(di_data.shape == output_data.shape)
+    assert(di_data.dtype == output_data.dtype)
+    assert(len(di_data) == len(output_data))
+    assert(di_data.ndim == 1 and output_data.ndim == 1)
 
-	# divide by 32768 to normalize samples to (-1,1)
+    # divide by 32768 to normalize samples to (-1,1)
 
-    # Write to CSV
+    # Write to CSV 
     try:
         with open(csv_path, mode='w', newline='') as csv_file:
             writer = csv.writer(csv_file)
-			for i in len(di_data)-WINDOW_SIZE:
-				windowEndpoint = i + WINDOW_SIZE
-				writer.writerow([di_data[i:windowEndpoint],
-								 output_data[i:windowEndpoint]])
+            for i in range(len(di_data)-WINDOW_SIZE):
+                windowEndpoint = i + WINDOW_SIZE
+                writer.writerow([di_data[i:windowEndpoint], output_data[i:windowEndpoint]])
     except Exception as e:
         raise IOError(f"Failed to write CSV file: {e}")
 
@@ -51,23 +50,25 @@ def wav_to_csv(di_wav_path, output_wav_path, csv_path):
 
 def main():
     parser = argparse.ArgumentParser(description="Process two file paths.")
+    parser.add_argument("csvPath", help="Path to write .csv file")
     parser.add_argument("DI", help="Path to guitar DI .wav file")
     parser.add_argument("Output", help="Path to post-amp .wav file")
 
     args = parser.parse_args()
 
+    csvPath = args.csvPath
     diFile = args.DI
     outputFile = args.Output
 
-    if not os.path.isfile(file1):
-        print(f"Error: '{file1}' does not exist or is not a file.")
+    if not os.path.isfile(diFile):
+        print(f"Error: '{diFile}' does not exist or is not a file.")
         sys.exit(1)
 
-    if not os.path.isfile(file2):
-        print(f"Error: '{file2}' does not exist or is not a file.")
+    if not os.path.isfile(outputFile):
+        print(f"Error: '{outputFile}' does not exist or is not a file.")
         sys.exit(1)
 
-	wav_to_csv(diFile.path, outputFile.path, "./data")
+    wav_to_csv(diFile, outputFile, csvPath)
 
 if __name__ == "__main__":
     main()
