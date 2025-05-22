@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"slices"
 
@@ -69,6 +70,7 @@ func write3DIntSliceBinary(data [][][]int, filename string) error {
 	defer file.Close()
 
 	writer := bufio.NewWriter(file)
+	normalizeVal := math.Pow(2, 23) - 1
 
 	// Write number of outer slices
 	err = binary.Write(writer, binary.LittleEndian, int32(len(data)))
@@ -90,9 +92,11 @@ func write3DIntSliceBinary(data [][][]int, filename string) error {
 				return err
 			}
 
-			// Write actual integers
+			// Write actual float values
 			for _, val := range oneD {
-				err = binary.Write(writer, binary.LittleEndian, int32(val))
+				// Normalize 24bit range to -1/+1
+				floatVal := float32(val) / float32(normalizeVal)
+				err = binary.Write(writer, binary.LittleEndian, floatVal)
 				if err != nil {
 					return err
 				}
@@ -104,6 +108,7 @@ func write3DIntSliceBinary(data [][][]int, filename string) error {
 	return writer.Flush()
 }
 
+// Unused currently
 func read3DIntSliceBinary(filename string) ([][][]int, error) {
 	file, err := os.Open(filename)
 	if err != nil {
