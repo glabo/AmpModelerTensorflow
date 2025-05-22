@@ -1,0 +1,4 @@
+data/outFile
+data/*.csv
+CNN.exe
+data/*.wav
