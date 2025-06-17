@@ -69,6 +69,10 @@ def get_input_target_pairs_from_binary(binaryPath: str):
     allOutput_np = numpy.array(allOutput)
     return allInput_np, allOutput_np
 
+
+# given that the sum of values in y_true might be some number < 1, the output of this function
+# can be a very large number. After that, if it locks on 1.00, it means that it has 0'd the y_pred
+# because that's the best it can figure out
 def noiseToSignalLoss(y_true, y_pred):
     losses = tf_math.divide(
         tf_math.reduce_sum(
@@ -133,7 +137,8 @@ def main():
             file.write("-" * 20 + "\n") 
         print("we hit a error :( ", type(e))
 
-    #y_hat = model.predict(X_test)
+    y_hat = model.predict(X_test)
+    print(y_hat[0][0])
     #print(max(y_hat.all()))
     #accuracy_score(y_test, y_hat)
 
