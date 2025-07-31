@@ -47,8 +47,13 @@ def prepare(args):
     sample_size = int(in_rate * args.sample_time)
     length = len(in_data) - len(in_data) % sample_size
 
-    x = in_data[:length].reshape((-1, 1, sample_size)).astype(np.float32)
-    y = out_data[:length].reshape((-1, 1, sample_size)).astype(np.float32)
+    # Taken from pytorch, who expects input shape: [batch_size, channels, signal_length]
+    # x = in_data[:length].reshape((-1, 1, sample_size)).astype(np.float32)
+    # y = out_data[:length].reshape((-1, 1, sample_size)).astype(np.float32)
+
+    # Tensorflow expects input shape: [batch_size, signal_length, channels]
+    x = in_data[:length].reshape((-1, sample_size, 1)).astype(np.float32)
+    y = out_data[:length].reshape((-1, sample_size, 1)).astype(np.float32)
 
     split = lambda d: np.split(d, [int(len(d) * 0.6), int(len(d) * 0.8)])
 

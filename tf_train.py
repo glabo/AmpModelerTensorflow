@@ -1,12 +1,44 @@
 import argparse
+import traceback
 from prepare import prepare
-from tf_model import PedalNetTF
+from tf_model import PedalNetTF, error_to_signal
 #from tfx.components import Trainer
 
+from tensorflow import train
+from tensorflow import config as tf_config
 
 def main(args):
+    #tf_config.experimental_run_functions_eagerly(True)
     prepare(args)
-    model = PedalNetTF(vars(args))
+    model = PedalNetTF(args)
+
+    # grab data from pickle
+    model.prepare_data()
+    x_train = model.x_train
+    y_train = model.y_train
+
+    # compile the model
+    model.compile(optimizer=model.optimizer(), loss=error_to_signal, metrics=['accuracy'])
+
+    train.Checkpoint(model=model.wavenet)
+    try:
+        # How can we check that the model is flowing as we expect?
+        model.fit(x_train, y_train, epochs=args.max_epochs, batch_size=32)
+    except Exception as e:
+        # Errors can take the form of printing the entire dataset, so we print them to a file
+        # so that we can actually see the traceback
+        with open('./failure_output/exception', mode='w') as file:
+            # Get the traceback information as a string
+            traceback_str = traceback.format_exc()
+            # Write the exception type, message, and traceback to the file
+            file.write(f"Exception Type: {type(e).__name__}\n")
+            file.write(f"Exception Message: {e}\n")
+            file.write(f"Traceback:\n{traceback_str}\n")
+            file.write("-" * 20 + "\n") 
+        print("we hit a error :( ", type(e))
+
+    # then save model
+    model.save("./model/pedalnet_tf.keras")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

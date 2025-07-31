@@ -2,11 +2,15 @@ import os
 import pickle
 
 from tensorflow import Module
+from tensorflow import Variable
 from tensorflow import Tensor
 from tensorflow import math as tf_math
 from tensorflow import concat as tf_concat
 from tensorflow import split as tf_split
+from tensorflow import size
+from tensorflow.keras import Model as TF_Module
 from tensorflow.keras.layers import Conv1D
+from tensorflow.keras.optimizers import Adam 
 
 def _causal_conv_stack(dilations, out_channels, kernel_size):
     """
@@ -57,19 +61,19 @@ class WaveNetTF(Module):
             x = out
             out_hidden = hidden(x)
 
-            # gated activation
-            #   split (32,16,3) into two (16,16,3) for tanh and sigm calculations
-            out_hidden_split_0, out_hidden_split_1 = tf_split(out_hidden,
-                                                              self.num_channels,
-                                                              axis=1)
-            out = tf_math.tanh(out_hidden_split_0) * tf_math.sigmoid(out_hidden_split_1)
+            out_hidden_split = tf_split(out_hidden,
+                                      num_or_size_splits=self.num_channels,
+                                      axis=2)
+            out = tf_math.tanh(out_hidden_split[0]) * tf_math.sigmoid(out_hidden_split[1])
             skips.append(out)
 
             out = residual(out)
-            out = out + x[:, :, -out.size(2) :]
+            outSize = out.get_shape()[1]
+            out = out + x[:, -outSize :, :]
 
         # modified "postprocess" step:
-        out = tf_concat([s[:, :, -out.size(2) :] for s in skips], axis=1)
+        outSize = out.get_shape()[1]
+        out = tf_concat([s[:, -outSize :, :] for s in skips], axis=2)
         out = self.linear_mix(out)
         return out
 
@@ -79,29 +83,32 @@ def error_to_signal(y, y_pred):
     https://www.mdpi.com/2076-3417/10/3/766/htm
     """
     y, y_pred = pre_emphasis_filter(y), pre_emphasis_filter(y_pred)
-    tf_math.pow(y, y_pred)
     diff = y - y_pred
     diffPow = tf_math.pow(diff, 2)
     # sum across rows
     diffSum = tf_math.reduce_sum(diffPow, 1)
 
     yPow = tf_math.pow(y, 2)
-    ySum = tf_math.reduce_sum(yPow, 2)
+    ySum = tf_math.reduce_sum(yPow, 1)
     return diffSum / (ySum + 1e-10)
 
 def pre_emphasis_filter(x, coeff=0.95):
-    return tf_concat((x[:, :, 0:1], x[:, :, 1:] - coeff * x[:, :, :-1]), axis=2)
+    concat = tf_concat((x[:, 0:1, :], x[:, 1:, :] - coeff * x[:, :-1, :]), axis=1)
+    return concat
 
-class PedalNetTF():
+class PedalNetTF(TF_Module):
     def __init__(self, hparams):
         super(PedalNetTF, self).__init__()
         self.wavenet = WaveNetTF(
-            num_channels=hparams["num_channels"],
-            dilation_depth=hparams["dilation_depth"],
-            num_repeat=hparams["num_repeat"],
-            kernel_size=hparams["kernel_size"],
+            num_channels=hparams.num_channels,
+            dilation_depth=hparams.dilation_depth,
+            num_repeat=hparams.num_repeat,
+            kernel_size=hparams.kernel_size,
         )
         self._hparams = hparams
+
+    def call(self, inputs, training=False):
+        return self.wavenet.__call__(inputs)
 
     def prepare_data(self):
         data = pickle.load(open(os.path.dirname(self._hparams.model) + "/data.pickle", "rb"))
@@ -111,3 +118,6 @@ class PedalNetTF():
         self.y_valid = data["y_valid"]
         self.x_test = data["x_test"]
         self.y_test = data["y_test"]
+
+    def optimizer(self):
+        return Adam(self._hparams.learning_rate)
