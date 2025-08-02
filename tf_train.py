@@ -38,7 +38,7 @@ def main(args):
         print("we hit a error :( ", type(e))
 
     # then save model
-    model.save("./model/pedalnet_tf.keras")
+    model.save(args.model)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     parser.add_argument("--tpu_cores", type=int, default=None)
     parser.add_argument("--cpu", action="store_true")
 
-    parser.add_argument("--model", type=str, default="models/pedalnet_tf/pedalnet_model")
+    parser.add_argument("--model", type=str, default="models/pedalnet_tf/pedalnet_model.keras")
     parser.add_argument("--resume", action="store_true")
     args = parser.parse_args()
     main(args)

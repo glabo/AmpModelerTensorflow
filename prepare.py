@@ -77,7 +77,8 @@ if __name__ == "__main__":
     parser.add_argument("in_file")
     parser.add_argument("out_file")
 
-    parser.add_argument("--model", type=str, default="models/pedalnet/pedalnet.ckpt")
+    # parser.add_argument("--model", type=str, default="models/pedalnet/pedalnet.ckpt")
+    parser.add_argument("--model", type=str, default="models/pedalnet_tf/pedalnet_model")
     parser.add_argument("--sample_time", type=float, default=100e-3)
     parser.add_argument("--normalize", type=bool, default=True)
     args = parser.parse_args()
