@@ -31,7 +31,7 @@ def test(args):
         y_pred.append(prediction)
 
     y_pred = np.concatenate(y_pred)
-    y_pred = y_pred[:, :, -x_test.shape[2] :]
+    y_pred = y_pred[:, -x_test.shape[1] :, :]
 
     save(os.path.dirname(args.model) + "/y_pred.wav", y_pred)
     save(os.path.dirname(args.model) + "/x_test.wav", data["x_test"] * data["std"] + data["mean"])

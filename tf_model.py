@@ -55,34 +55,30 @@ class WaveNetTF(Module):
 
         self.num_channels = num_channels
 
-    def __call__(self, x):
-        out = x
+    def __call__(self, input):
         skips = []
-        out = self.input_layer(out)
+        layer_output = self.input_layer(input)
 
         for hidden, residual in zip(self.hidden, self.residuals):
-            x = out
-            out_hidden = hidden(x)
+            current_layer_input = layer_output
+            residual_input = current_layer_input 
+            out_hidden = hidden(current_layer_input)
 
-            # I"M ALMOST CERTAIN THIS COMMENT IS WRONG OR AT LEAST MISLEAD ME
-            # It looks like you're supposed to split on the 0th dimension, but the pytorch
-            # code splits on the 2nd (their 1st)
             # gated activation
-            #   split (32,16,3) into two (16,16,3) for tanh and sigm calculations
             out_hidden_split = tf_split(out_hidden,
                                       num_or_size_splits=self.num_channels,
                                       axis=2)
-            out = tf_math.tanh(out_hidden_split[0]) * tf_math.sigmoid(out_hidden_split[1])
-            skips.append(out)
+            gated_output = tf_math.tanh(out_hidden_split[0]) * tf_math.sigmoid(out_hidden_split[1])
+            skips.append(gated_output)
 
-            out = residual(out)
-            outSize = out.get_shape()[1]
-            out = out + x[:, -outSize :, :]
+            residual_output = residual(gated_output)
+            outSize = residual_output.get_shape()[1]
+            layer_output = residual_output + residual_input[:, -outSize :, :]
 
         # modified "postprocess" step:
-        outSize = out.get_shape()[1]
-        out = tf_concat([s[:, -outSize :, :] for s in skips], axis=2)
-        out = self.linear_mix(out)
+        outSize = layer_output.get_shape()[1]
+        skip_concat = tf_concat([s[:, -outSize :, :] for s in skips], axis=2)
+        out = self.linear_mix(skip_concat)
         return out
 
 @register_keras_serializable()
@@ -108,7 +104,6 @@ def pre_emphasis_filter(x, coeff=0.95):
 @register_keras_serializable()
 class PedalNetTF(TF_Module):
     def __init__(self, hparams, **kwargs):
-        #kwargs['hparams'] = hparams
         super(PedalNetTF, self).__init__(**kwargs)
         self.wavenet = WaveNetTF(
             num_channels=hparams.num_channels,
@@ -118,11 +113,10 @@ class PedalNetTF(TF_Module):
         )
         self._hparams = hparams
 
-    def call(self, inputs, training=False):
+    def call(self, inputs):
         return self.wavenet.__call__(inputs)
 
     def get_config(self):
-        # TODO: hparams is some object, have to figure out how to return a dict
         return vars(self._hparams) 
 
     @classmethod
