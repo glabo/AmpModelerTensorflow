@@ -16,9 +16,7 @@ def save(name, data):
 #@torch.no_grad()
 def test(args):
     print(args.model)
-    # model = PedalNetTF.load_weights(args.model)
     model = load_model(args.model)
-    #model.eval()
     data = pickle.load(open(os.path.dirname(args.model) + "/data.pickle", "rb"))
 
     x_test = data["x_test"]

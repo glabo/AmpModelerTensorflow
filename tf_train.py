@@ -8,7 +8,7 @@ from tensorflow import train
 from tensorflow import config as tf_config
 
 def main(args):
-    #tf_config.experimental_run_functions_eagerly(True)
+    tf_config.run_functions_eagerly(True)
     prepare(args)
     model = PedalNetTF(args)
 
@@ -16,14 +16,18 @@ def main(args):
     model.prepare_data()
     x_train = model.x_train
     y_train = model.y_train
+    x_valid = model.x_valid
+    y_valid = model.y_valid
 
     # compile the model
     model.compile(optimizer=model.optimizer(), loss=error_to_signal, metrics=['accuracy'])
 
-    train.Checkpoint(model=model.wavenet)
+    #train.Checkpoint(model=model.wavenet)
+    history = None
     try:
         # How can we check that the model is flowing as we expect?
-        model.fit(x_train, y_train, epochs=args.max_epochs, batch_size=32)
+        history = model.fit(x_train, y_train, epochs=args.max_epochs, batch_size=args.batch_size,
+                             validation_data=(x_valid, y_valid))
     except Exception as e:
         # Errors can take the form of printing the entire dataset, so we print them to a file
         # so that we can actually see the traceback
@@ -35,10 +39,14 @@ def main(args):
             file.write(f"Exception Message: {e}\n")
             file.write(f"Traceback:\n{traceback_str}\n")
             file.write("-" * 20 + "\n") 
-        print("we hit a error :( ", type(e))
 
+    print("Model saved to: ", args.model)
     # then save model
     model.save(args.model)
+    print(args)
+    print("Loss history: ")
+    print(history.history)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -52,7 +60,7 @@ if __name__ == "__main__":
     parser.add_argument("--num_repeat", type=int, default=2)
     parser.add_argument("--kernel_size", type=int, default=3)
 
-    parser.add_argument("--batch_size", type=int, default=64)
+    parser.add_argument("--batch_size", type=int, default=32)
     parser.add_argument("--learning_rate", type=float, default=3e-3)
 
     parser.add_argument("--max_epochs", type=int, default=1000)
