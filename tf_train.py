@@ -1,5 +1,7 @@
 import argparse
 import traceback
+import json
+import os
 from prepare import prepare
 from tf_model import PedalNetTF, error_to_signal
 #from tfx.components import Trainer
@@ -8,7 +10,7 @@ from tensorflow import train
 from tensorflow import config as tf_config
 
 def main(args):
-    tf_config.run_functions_eagerly(True)
+    #tf_config.run_functions_eagerly(True)
     prepare(args)
     model = PedalNetTF(args)
 
@@ -43,10 +45,10 @@ def main(args):
     print("Model saved to: ", args.model)
     # then save model
     model.save(args.model)
-    print(args)
-    print("Loss history: ")
-    print(history.history)
 
+    stat_file = args.model
+    with open(os.path.dirname(args.model) + "/stats.json", "w") as stat_file:
+        json.dump(history.history, stat_file, indent=4)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
