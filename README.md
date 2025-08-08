@@ -10,14 +10,29 @@ The purpose of this project was to see if I could build the neural network descr
 
 The model is supplied a 3-4min clip of DI guitar input and associated output from the amp or effect we're trying to model. For proof of concept I'm modeling software amplifiers, particularly those in [Neural DSP's Archetype: Nolly](https://neuraldsp.com/plugins/archetype-nolly?srsltid=AfmBOooHhgYWDFGuZKiJoEpmGdnre6s0M4bNjbrj8iwtTl4unvHxUrv_) plugin, as this greatly simplifies the training data generation compared to hardware amplifiers. Because of this, we already have the guitar DI and isolating the amplifier output (without pedals, cabinets, microphones, etc.) is as simple as turning off everything else in the chain. As I understand it this can be used to model any non-time-based effects, i.e. preamps, overdrives, compressors, etc.
 
-### Performance and Output
+### Performance and Examples
+In the examples the "raw" tone refers to the signal straight from the amp, without a cabinet or effects. The "full chain" is as it sounds, will effects and cabinet impulses applied. "Expected" output is produced by the plugin that we're modeling.
+
+Here's an example of a clean jazz tone (1000 Epochs, 13% ESR):
+<img width="1102" height="530" alt="SingSinginHeadSettings" src="https://github.com/user-attachments/assets/d98a219c-b327-482f-b12e-2fe5143773f6" />
+- [DI](https://github.com/user-attachments/assets/157c1bb1-5616-466c-a814-56c595350336)
+- [Amp-Only Expected Output](https://github.com/user-attachments/assets/83304969-2ef4-47f5-b896-73d67657e5f1)
+- [Amp-Only Modeled Output](https://github.com/user-attachments/assets/44743169-6f85-4f70-8eb9-e8b8d34a7cf9)
+- [Full Chain Expected Output](https://github.com/user-attachments/assets/25757873-41b1-4af5-b263-661de9dc5ad2)
+- [Full Chain Modeled Output](https://github.com/user-attachments/assets/8b741004-51fd-41ba-bf23-43826bea3db8)
+
+It's not perfect, the most noticable difference is the model is not as bright as the expected output, but it's pretty close and definitely servicable.
+
 As per my favorite music, my main goal is to model high gain amplifiers. Those are tougher for the model to train than a clean guitar signal, I would assume because the input and output signal are much more different than a DI and clean amp signal. But we push on anyhow.
 
-Here's an example of a death metal tone (1000 Epochs, 20% ESR):
-<img width="1268" height="599" alt="EWBHeadSettings" src="https://github.com/user-attachments/assets/30b2a3fb-fcfd-4761-8fbc-9b84bef98fe8" />
-(insert audio samples)
+Here's an example of a heavy metal tone (1000 Epochs, 20% ESR):
+<img width="1268" height="599" alt="EWBHeadSettings" src="https://github.com/user-attachments/assets/a880032f-93f1-4f4f-b6b7-0a1adada8a09" />
 
-It's not perfect, but to my ears it sounds much closer than I'd expect for 20% error. And after plugging it into the full signal chain with a cabinet IR, the difference is even less noticable:
+Though it would provide the most scientific comparison, raw high gain amplifier output is gross. In this case the full chain emphasizes the difference between the two, so we'll only show full-chain output here.
+- [Full Chain Expected](https://github.com/user-attachments/assets/edd9bfbd-edee-40f7-bbbf-b044b9a87008)
+- [Full Chain Modeled](https://github.com/user-attachments/assets/464dfc94-9941-4bee-bf24-b43dc9bcab71)
+
+Above ~225Hz these signals are quite similar, but sub-225Hz frequencies in the modeled signal are ~3dB lower than in the expected signal. The difference here is certainly larger than the clean tone, which is to be expected given the ESR.
 
 ### Future plans:
 - There are VST plugins for loading models to use as real-time guitar effects. I may write one myself for giggles, but in the meantime I'm just going to use: [SmartGuitarPedal](https://github.com/GuitarML/SmartGuitarPedal)
