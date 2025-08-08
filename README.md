@@ -29,8 +29,8 @@ Here's an example of a heavy metal tone (1000 Epochs, 20% ESR):
 <img width="1268" height="599" alt="EWBHeadSettings" src="https://github.com/user-attachments/assets/a880032f-93f1-4f4f-b6b7-0a1adada8a09" />
 
 Though it would provide the most scientific comparison, raw high gain amplifier output is gross. In this case the full chain emphasizes the difference between the two, so we'll only show full-chain output here.
-- [Full Chain Expected](https://github.com/user-attachments/assets/edd9bfbd-edee-40f7-bbbf-b044b9a87008)
-- [Full Chain Modeled](https://github.com/user-attachments/assets/464dfc94-9941-4bee-bf24-b43dc9bcab71)
+- [Full Chain Expected](https://github.com/user-attachments/assets/d60aa4f0-4d5e-4e00-b169-cd533844d63b)
+- [Full Chain Modeled](https://github.com/user-attachments/assets/1062a29e-310f-4473-8cd7-fdab81559f52)
 
 Above ~225Hz these signals are quite similar, but sub-225Hz frequencies in the modeled signal are ~3dB lower than in the expected signal. The difference here is certainly larger than the clean tone, which is to be expected given the ESR.
 
