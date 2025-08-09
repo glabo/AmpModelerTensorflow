@@ -11,7 +11,7 @@ The purpose of this project was to see if I could build the neural network descr
 The model is supplied a 3-4min clip of DI guitar input and associated output from the amp or effect we're trying to model. For proof of concept I'm modeling software amplifiers, particularly those in [Neural DSP's Archetype: Nolly](https://neuraldsp.com/plugins/archetype-nolly?srsltid=AfmBOooHhgYWDFGuZKiJoEpmGdnre6s0M4bNjbrj8iwtTl4unvHxUrv_) plugin, as this greatly simplifies the training data generation compared to hardware amplifiers. Because of this, we already have the guitar DI and isolating the amplifier output (without pedals, cabinets, microphones, etc.) is as simple as turning off everything else in the chain. As I understand it this can be used to model any non-time-based effects, i.e. preamps, overdrives, compressors, etc.
 
 ### Performance and Examples
-In the examples the "raw" tone refers to the signal straight from the amp, without a cabinet or effects. The "full chain" is as it sounds, will effects and cabinet impulses applied. "Expected" output is produced by the plugin that we're modeling.
+In the examples the "raw" tone refers to the signal straight from the amp, without a cabinet or effects. The "full chain" is as it sounds, with effects and cabinet impulses applied. "Expected" output is produced by the plugin that we're modeling.
 
 Here's an example of a clean jazz tone (1000 Epochs, 13% ESR):
 <img width="1102" height="530" alt="SingSinginHeadSettings" src="https://github.com/user-attachments/assets/d98a219c-b327-482f-b12e-2fe5143773f6" />
@@ -36,4 +36,4 @@ Above ~225Hz these signals are quite similar, but sub-225Hz frequencies in the m
 
 ### Future plans:
 - There are VST plugins for loading models to use as real-time guitar effects. I may write one myself for giggles, but in the meantime I'm just going to use: [SmartGuitarPedal](https://github.com/GuitarML/SmartGuitarPedal)
-- This process produces a model of an amp or effect with static settings, which isn't particularly useful in practice. The Neural DSP folks have written a paper: [End-To-End Amp Modeling: From Data to Controllable Guitar Amplifier Models](https://arxiv.org/pdf/2403.08559) about the capturing the setting changes here: and I aim to implement that as well. Once again aided by my self-isolation in the software realm, the automation of settings will be simple as compared to their knob-turning robot.
+- This process produces a model of an amp or effect with static settings, which isn't particularly useful in practice. The Neural DSP folks have written a paper: [End-To-End Amp Modeling: From Data to Controllable Guitar Amplifier Models](https://arxiv.org/pdf/2403.08559) about the capturing amplifiers with dynamic settings and I aim to implement that as well. Once again aided by my self-isolation in the software realm, the automation of settings will be simple as compared to their knob-turning robot.
