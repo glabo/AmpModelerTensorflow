@@ -111,8 +111,8 @@ def analyze_pred_vs_actual(args):
     sig_temp = signal1.tolist()
     plt.axis(
         [
-            Time3[sig_temp.index((max(sig_temp)))] - 0.005,
-            Time3[sig_temp.index((max(sig_temp)))] + 0.005,
+            Time3[sig_temp.index((max(sig_temp)))] - 0.01,
+            Time3[sig_temp.index((max(sig_temp)))] + 0.01,
             min(signal2),
             max(signal2),
         ]
