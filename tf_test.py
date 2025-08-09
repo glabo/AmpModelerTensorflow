@@ -12,10 +12,7 @@ import os
 def save(name, data):
     wavfile.write(name, 44100, data.flatten().astype(np.float32))
 
-# tf.stop_gradient()
-#@torch.no_grad()
 def test(args):
-    print(args.model)
     model = load_model(args.model)
     data = pickle.load(open(os.path.dirname(args.model) + "/data.pickle", "rb"))
 
