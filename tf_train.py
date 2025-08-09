@@ -8,6 +8,7 @@ from tf_model import PedalNetTF, error_to_signal
 
 from tensorflow import train
 from tensorflow import config as tf_config
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 
 def main(args):
     #tf_config.run_functions_eagerly(True)
@@ -24,12 +25,23 @@ def main(args):
     # compile the model
     model.compile(optimizer=model.optimizer(), loss=error_to_signal, metrics=['accuracy'])
 
-    #train.Checkpoint(model=model.wavenet)
+    # Configure 20 epoch early stopping
+    early_stop = EarlyStopping(monitor='loss', 
+                    patience = 20, restore_best_weights = False)
+
+    # Save min loss weights
+    checkpoint = ModelCheckpoint(args.model, 
+                    monitor="loss", mode="min", 
+                    save_best_only=True, verbose=1)
+
     history = None
     try:
         # How can we check that the model is flowing as we expect?
-        history = model.fit(x_train, y_train, epochs=args.max_epochs, batch_size=args.batch_size,
-                             validation_data=(x_valid, y_valid))
+        history = model.fit(x_train, y_train,
+                            epochs=args.max_epochs,
+                            batch_size=args.batch_size,
+                            validation_data=(x_valid, y_valid),
+                            callbacks=[checkpoint, early_stop])
     except Exception as e:
         # Errors can take the form of printing the entire dataset, so we print them to a file
         # so that we can actually see the traceback
@@ -42,9 +54,13 @@ def main(args):
             file.write(f"Traceback:\n{traceback_str}\n")
             file.write("-" * 20 + "\n") 
 
-    print("Model saved to: ", args.model)
     # then save model
-    model.save(args.model)
+    # model.save(args.model)
+
+    min_loss = min(history.history['loss'])
+    min_loss_epoch = history.history['loss'].index(min_loss) + 1
+    
+    print(f"Min loss: {min_loss:.4f} @ Epoch {min_loss_epoch}")
 
     stat_file = args.model
     with open(os.path.dirname(args.model) + "/stats.json", "w") as stat_file:
