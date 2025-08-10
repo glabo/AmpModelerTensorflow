@@ -21,6 +21,8 @@ def main(args):
         y = input("Load existing model? (Y/N): ")
         if y.capitalize() == 'Y':
             load_existing_model = True
+        else:
+            print("Overwriting existing model at path " + args.model)
 
     model = None 
     if load_existing_model:
@@ -36,7 +38,7 @@ def main(args):
     x_valid = model.x_valid
     y_valid = model.y_valid
 
-    # Configure 20 epoch early stopping
+    # Configure early stopping
     early_stop = EarlyStopping(monitor='val_loss', 
                     patience = args.patience, restore_best_weights = False)
 
