@@ -17,7 +17,7 @@ from tensorflow.keras.saving import register_keras_serializable
 
 from tensorflow import convert_to_tensor
 
-def _causal_conv_stack(dilations, out_channels, kernel_size):
+def _causal_conv_stack(dilations, out_channels, kernel_size, name):
     """
     Create stack of dilated convolutional layers, outlined in WaveNet paper:
     https://arxiv.org/pdf/1609.03499.pdf
@@ -32,8 +32,9 @@ def _causal_conv_stack(dilations, out_channels, kernel_size):
                 dilation_rate=d,
                 groups=1,
                 use_bias=True,
+                name=name + "_" + str(i)
             )
-            for d in dilations
+            for i, d in enumerate(dilations)
         ]
     return moduleList
 
@@ -66,17 +67,19 @@ class PedalNetTF(TF_Module):
         super(PedalNetTF, self).__init__(**kwargs)
         dilations = [2 ** d for d in range(hparams.dilation_depth)] * hparams.num_repeat
         internal_channels = int(hparams.num_channels * 2)
-        self.hidden = _causal_conv_stack(dilations, internal_channels, hparams.kernel_size)
-        self.residuals = _causal_conv_stack(dilations, hparams.num_channels, 1)
+        self.hidden = _causal_conv_stack(dilations, internal_channels, hparams.kernel_size, "hidden")
+        self.residuals = _causal_conv_stack(dilations, hparams.num_channels, 1, "residual")
         self.input_layer = Conv1D(
             filters=hparams.num_channels,
             kernel_size=1,
             padding="causal",
+            name='input_layer',
         )
 
         self.linear_mix = Conv1D(
             filters=1, #out_channels
             kernel_size=1,
+            name='linear_mix',
         )
 
         self.num_channels = hparams.num_channels
