@@ -49,7 +49,6 @@ def main(args):
 
     history = None
     try:
-        # How can we check that the model is flowing as we expect?
         history = model.fit(x_train, y_train,
                             epochs=args.max_epochs,
                             batch_size=args.batch_size,
