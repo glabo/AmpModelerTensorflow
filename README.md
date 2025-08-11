@@ -13,7 +13,7 @@ The model is supplied a 3-4min clip of DI guitar input and associated output fro
 ### Performance and Examples
 In the examples the "raw" tone refers to the signal straight from the amp, without a cabinet or effects. The "full chain" is as it sounds, with effects and cabinet impulses applied. "Expected" output is produced by the plugin that we're modeling.
 
-Here's an example of a clean jazz tone (1000 Epochs, 13% ESR):
+Here's an example of a clean jazz tone (1000 Epochs, 8% ESR):
 <img width="1102" height="530" alt="SingSinginHeadSettings" src="https://github.com/user-attachments/assets/d98a219c-b327-482f-b12e-2fe5143773f6" />
 - [DI](https://github.com/user-attachments/assets/157c1bb1-5616-466c-a814-56c595350336)
 - [Amp-Only Expected Output](https://github.com/user-attachments/assets/83304969-2ef4-47f5-b896-73d67657e5f1)
@@ -21,9 +21,12 @@ Here's an example of a clean jazz tone (1000 Epochs, 13% ESR):
 - [Full Chain Expected Output](https://github.com/user-attachments/assets/25757873-41b1-4af5-b263-661de9dc5ad2)
 - [Full Chain Modeled Output](https://github.com/user-attachments/assets/8b741004-51fd-41ba-bf23-43826bea3db8)
 
-It's not perfect, the most noticable difference is the model is not as bright as the expected output, but it's pretty close and definitely servicable.
+It's not perfect, the most noticable difference is the model is not as bright as the expected output, but it's pretty close and definitely servicable. And you can see the waveform comparison reflects that. "y_test" is the expected output and "y_pred" is the generated output from the model.
 
-As per my favorite music, my main goal is to model high gain amplifiers. Those are tougher for the model to train than a clean guitar signal, I would assume because the input and output signal are much more different than a DI and clean amp signal. But we push on anyhow.
+<img width="1062" height="192" alt="detail_signal_comparison_e2s_0 0132_cropped" src="https://github.com/user-attachments/assets/184e1d8e-3ce0-4076-93dd-de2b151be36e" />
+
+
+That being said, my main goal is to model high gain amplifiers. Those are tougher for the model to train than a clean guitar signal, I would assume because the input and output signal are much more different than a DI and clean amp signal. But we push on anyhow.
 
 Here's an example of a heavy metal tone (1000 Epochs, 20% ESR):
 <img width="1268" height="599" alt="EWBHeadSettings" src="https://github.com/user-attachments/assets/a880032f-93f1-4f4f-b6b7-0a1adada8a09" />
@@ -32,7 +35,7 @@ Though it would provide the most scientific comparison, raw high gain amplifier 
 - [Full Chain Expected](https://github.com/user-attachments/assets/d60aa4f0-4d5e-4e00-b169-cd533844d63b)
 - [Full Chain Modeled](https://github.com/user-attachments/assets/1062a29e-310f-4473-8cd7-fdab81559f52)
 
-Above ~225Hz these signals are quite similar, but sub-225Hz frequencies in the modeled signal are ~3dB lower than in the expected signal. The difference here is certainly larger than the clean tone, which is to be expected given the ESR. You can see this reflected in a visual comparison of the output signals, the small-and-fast high frequency changes are fairly faithfully followed, but the low frequency voltage-offset-like changes are largely lost. In this chart "y_test" is the expected output and "y_pred" is the generated output from the model.
+Above ~225Hz these signals are quite similar, but sub-225Hz frequencies in the modeled signal are ~3dB lower than in the expected signal. The difference here is certainly larger than the clean tone, which is to be expected given the ESR. You can see this reflected in a visual comparison of the output signals, the small-and-fast high frequency changes are fairly faithfully followed, but the low frequency voltage-offset-like changes are largely lost. Once again, "y_test" is the expected output and "y_pred" is the generated output from the model.
 
 <img width="1061" height="194" alt="detail_signal_comparison_e2s_0 3417_cropped" src="https://github.com/user-attachments/assets/e90a16bd-4a7a-4eaf-8121-3453be1e3498" />
 
