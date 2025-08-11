@@ -32,7 +32,7 @@ Though it would provide the most scientific comparison, raw high gain amplifier 
 - [Full Chain Expected](https://github.com/user-attachments/assets/d60aa4f0-4d5e-4e00-b169-cd533844d63b)
 - [Full Chain Modeled](https://github.com/user-attachments/assets/1062a29e-310f-4473-8cd7-fdab81559f52)
 
-Above ~225Hz these signals are quite similar, but sub-225Hz frequencies in the modeled signal are ~3dB lower than in the expected signal. The difference here is certainly larger than the clean tone, which is to be expected given the ESR. You can see this reflected in a visual comparison of the output signals, the small-and-fast high frequency changes are fairly faithfully followed, but the low frequency voltage-offset-like changes are largely lost.
+Above ~225Hz these signals are quite similar, but sub-225Hz frequencies in the modeled signal are ~3dB lower than in the expected signal. The difference here is certainly larger than the clean tone, which is to be expected given the ESR. You can see this reflected in a visual comparison of the output signals, the small-and-fast high frequency changes are fairly faithfully followed, but the low frequency voltage-offset-like changes are largely lost. In this chart "y_test" is the expected output and "y_pred" is the generated output from the model.
 
 <img width="1061" height="194" alt="detail_signal_comparison_e2s_0 3417_cropped" src="https://github.com/user-attachments/assets/e90a16bd-4a7a-4eaf-8121-3453be1e3498" />
 
