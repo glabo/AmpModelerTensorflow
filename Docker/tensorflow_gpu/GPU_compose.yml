@@ -1,0 +1,20 @@
+services:
+  tensorflow_gpu:
+    build:
+      context: .            # tells it to use local Dockerfile
+      dockerfile: Dockerfile
+    #image: tensorflow/tensorflow:latest-gpu
+    stdin_open: true
+    tty: true
+    entrypoint: bash
+    restart: "no"
+    volumes:
+      - ../../:/workspace
+    working_dir: /workspace
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+              count: all
+    runtime: nvidia
