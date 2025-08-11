@@ -34,6 +34,8 @@ Though it would provide the most scientific comparison, raw high gain amplifier 
 
 Above ~225Hz these signals are quite similar, but sub-225Hz frequencies in the modeled signal are ~3dB lower than in the expected signal. The difference here is certainly larger than the clean tone, which is to be expected given the ESR.
 
+I suspect the loss in low end could in-part be the result of the pre-emphasis filter, which emphasizes higher frequencies as the model struggles to replicate them. There's likely some tuning to be done there, and I have a theory that in practice they use a combination of model and EQ to achieve the desired output.
+
 ### Future plans:
 - There are VST plugins for loading models to use as real-time guitar effects. I may write one myself for giggles, but in the meantime I'm just going to use: [SmartGuitarPedal](https://github.com/GuitarML/SmartGuitarPedal)
 - This process produces a model of an amp or effect with static settings, which isn't particularly useful in practice. The Neural DSP folks have written a paper: [End-To-End Amp Modeling: From Data to Controllable Guitar Amplifier Models](https://arxiv.org/pdf/2403.08559) about the capturing amplifiers with dynamic settings and I aim to implement that as well. Once again aided by my self-isolation in the software realm, the automation of settings will be simple as compared to their knob-turning robot.
