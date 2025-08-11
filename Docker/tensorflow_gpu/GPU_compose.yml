@@ -1,9 +1,8 @@
 services:
   tensorflow_gpu:
     build:
-      context: .            # tells it to use local Dockerfile
+      context: .
       dockerfile: Dockerfile
-    #image: tensorflow/tensorflow:latest-gpu
     stdin_open: true
     tty: true
     entrypoint: bash

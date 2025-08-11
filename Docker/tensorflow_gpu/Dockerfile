@@ -1,5 +1,7 @@
-FROM tensorflow/tensorflow:latest-gpu
-#FROM tensorflow/tensorflow:2.14.0-gpu
+FROM nvcr.io/nvidia/tensorflow:25.02-tf2-py3
+
+# Maybe one day we can use the official tensorflow image, but the 5070 is apparently too new
+#FROM tensorflow/tensorflow:latest-gpu
 
 RUN apt-get update && \
     apt-get -y install vim
