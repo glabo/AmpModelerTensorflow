@@ -28,13 +28,18 @@ As per my favorite music, my main goal is to model high gain amplifiers. Those a
 Here's an example of a heavy metal tone (1000 Epochs, 20% ESR):
 <img width="1268" height="599" alt="EWBHeadSettings" src="https://github.com/user-attachments/assets/a880032f-93f1-4f4f-b6b7-0a1adada8a09" />
 
-Though it would provide the most scientific comparison, raw high gain amplifier output is gross. In this case the full chain emphasizes the difference between the two, so we'll only show full-chain output here.
+Though it would provide the most scientific comparison, raw high gain amplifier output is gross. In this case the full chain only emphasizes the difference between the two, so we'll only show full-chain output here.
 - [Full Chain Expected](https://github.com/user-attachments/assets/d60aa4f0-4d5e-4e00-b169-cd533844d63b)
 - [Full Chain Modeled](https://github.com/user-attachments/assets/1062a29e-310f-4473-8cd7-fdab81559f52)
 
 Above ~225Hz these signals are quite similar, but sub-225Hz frequencies in the modeled signal are ~3dB lower than in the expected signal. The difference here is certainly larger than the clean tone, which is to be expected given the ESR.
 
-I suspect the loss in low end could in-part be the result of the pre-emphasis filter, which emphasizes higher frequencies as the model struggles to replicate them. There's likely some tuning to be done there, and I have a theory that in practice they use a combination of model and EQ to achieve the desired output.
+### Tangential Speculation
+I suspect the loss in low end could in-part be the result of the pre-emphasis filtering, which emphasizes higher frequencies as the model struggles to replicate them. There's likely some tuning to be done there, and I have a theory that in practice they use a combination of model and EQ to achieve the desired output.
+
+Ultimately, there's an interesting caveat to the application of producing audio: two waveforms don't have to be identical for our ears to recognize them as quite similar, so you could in theory "get away" with much more error than you would in other ML applications. There is also no inherent practical value in achieving a 1:1 replica of a particular amp as long as you have captured the "character" of said amp; beyond that you're only looking to produce a "good feeling" tool for a guitar player to make noise with. My ears can tell the difference between the above two tones in head-to-head comparison, and the one I've produced certainly requires a bit of working to better cover the frequency spectrum before I'd call it complete, but despite 20% error it sure sounds like a Peavey 5150 to me. All of that to say: I'd be curious to see the acceptable ESR threshhold when companies produce products from this, as I'm sure it's really easy to fixate on achieving low-single-digit ESR when it may take less to fool your ears and even less to achieve recognizable resemblance.
+
+I also think I could get the model to work better and achieve lower ESR.
 
 ### Future plans:
 - There are VST plugins for loading models to use as real-time guitar effects. I may write one myself for giggles, but in the meantime I'm just going to use: [SmartGuitarPedal](https://github.com/GuitarML/SmartGuitarPedal)
